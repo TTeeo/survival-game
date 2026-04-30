@@ -75,13 +75,32 @@ El proyecto está organizado separando responsabilidades principales:
 
 La configuración principal del juego se encuentra en `config/settings.py`.
 
-Desde este archivo se centralizan los valores principales del juego, como:
+Este archivo centraliza los valores clave del sistema, organizados en:
 
-- tamaño de pantalla y FPS
-- configuración de balas y sprites
-- armas disponibles, daño, cooldown, velocidad, alcance y tipo de bala
-- configuración inicial del jugador
-- tipos de zombies, vida, velocidad y daño
-- separación entre zombies
-- configuración de rondas, cantidad de enemigos, velocidad de aparición y probabilidad de cada tipo de zombie
-- puntos de aparición de enemigos
+### Pantalla
+- Tamaño de pantalla  
+- FPS  
+
+### Combate
+- Configuración de balas (tipo, velocidad, comportamiento)  
+- Armas (daño, cooldown, alcance, tipo de bala)  
+
+### Sprites y assets
+- Sprites de balas (spritesheet y posiciones)  
+- Sprites de armas  
+- Sprites de jugador y enemigos  
+
+### Jugador
+- Configuración inicial (posición, vida, velocidad, arma inicial)  
+
+### Enemigos
+- Tipos de zombies (vida, velocidad, daño)  
+- Parámetros de comportamiento (separación entre zombies)  
+
+### Rondas
+- Cantidad de enemigos por ronda  
+- Frecuencia de aparición  
+- Probabilidad de cada tipo de enemigo  
+
+### Spawn
+- Puntos de aparición de enemigos  

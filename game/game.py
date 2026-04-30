@@ -18,8 +18,8 @@ from settings import (
 )
 from entities.player import Player
 from entities.bullet import Bullet
-from round import Round
-from zombie_spawner import ZombieSpawner
+from managers.round import Round
+from spawners.zombie_spawner import ZombieSpawner
 from managers.asset_manager import AssetManager
 
 

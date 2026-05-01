@@ -20,74 +20,89 @@ El modelo representa las principales entidades conceptuales del sistema y sus re
 
 ### Game
 Representa una instancia del juego en ejecución.  
-Contiene al jugador y gestiona la progresión de rondas.
+Contiene al jugador y gestiona la progresión de rondas, incluyendo la generación de enemigos y el estado general de la partida.
 
 ---
 
 ### Player (Jugador)
 Representa al personaje controlado por el usuario.  
-El jugador puede moverse, utilizar armas y recolectar recompensas.
+Puede moverse por el mapa, utilizar armas, disparar proyectiles y recolectar recompensas.
 
 ---
 
 ### Weapon (Arma)
-Define cómo el jugador realiza ataques.  
-Cada arma genera proyectiles al ser utilizada.
+Define cómo el jugador realiza disparos.  
+Contiene la configuración del ataque, como daño, velocidad del proyectil, cantidad de proyectiles por disparo, dispersión, alcance y tiempo entre disparos.  
+Al ser utilizada, genera uno o más proyectiles.
 
 ---
 
 ### Projectile (Proyectil)
-Representa cualquier objeto generado por un arma que existe en el mundo del juego.  
-Posee daño base y puede aplicar efectos adicionales.  
-Al finalizar su ciclo de vida (por impacto o expiración), aplica su daño base y los efectos asociados, si los hubiera.
+Entidad generada por un arma que se desplaza en el mundo del juego.  
+Posee atributos como posición, dirección, velocidad, daño y distancia recorrida.  
+Puede tener un efecto asociado.  
+Al impactar o finalizar su ciclo de vida, aplica su daño y, opcionalmente, su efecto.
 
 ---
 
-### Effect (Efecto)
-Define comportamientos adicionales aplicados por un proyectil, como daño en área o ralentización.  
-Los efectos son opcionales y extienden el comportamiento base.
+### ProjectileEffect (Efecto de Proyectil)
+Comportamiento opcional asociado a un proyectil.  
+Se ejecuta cuando el proyectil impacta o expira.  
+Permite extender el comportamiento del proyectil, por ejemplo aplicando daño en área.
 
 ---
 
 ### Zombie
 Entidad enemiga que aparece durante las rondas.  
-Puede recibir daño y puede generar recompensas al ser eliminado.  
-Además, posee uno o más ataques que definen cómo interactúa con el jugador.
+Puede moverse, recibir daño y atacar al jugador.  
+Posee uno o más ataques que definen su comportamiento ofensivo.  
+Al morir, otorga puntaje y puede generar recompensas.
 
 ---
 
-### Attack (Ataque)
-Define cómo un zombie realiza daño o interactúa ofensivamente.  
-Permite modelar distintos tipos de ataque, como cuerpo a cuerpo, a distancia o en área, sin modificar la clase `Zombie`.
+### ZombieAttack (Ataque de Zombie)
+Define cómo un zombie realiza daño.  
+Cada ataque posee propiedades como daño y alcance.  
+Permite modelar distintos tipos de ataque (por ejemplo, cuerpo a cuerpo o a distancia) sin modificar la clase `Zombie`.
 
 ---
 
 ### Round (Ronda)
 Representa una oleada de enemigos.  
-Define la dificultad del juego a través de la cantidad de zombies y el tiempo entre apariciones.
+Define la cantidad, tipo y frecuencia de aparición de zombies.  
+La dificultad aumenta progresivamente entre rondas.
 
 ---
 
 ### Reward (Recompensa)
-Representa un beneficio obtenido por el jugador al eliminar enemigos.  
-Se modela de forma genérica, permitiendo representar distintos tipos de beneficios como armas, modificadores, recuperación de vida o munición.
+Objeto generado al eliminar enemigos que puede ser recolectado por el jugador.  
+Al ser consumido, aplica directamente un beneficio, como recuperar vida, obtener munición o adquirir un arma.
 
 ---
 
-### Modifier (Modificador)
-Representa una variación sobre atributos como daño, velocidad o tiempo de recarga.  
-Actualmente se modela como cambios numéricos y no forma parte de la primera versión jugable.  
-El modelo contempla su incorporación futura para permitir la modificación de parámetros o comportamientos de las armas.
+### Ammo (Munición)
+Cantidad de disparos disponibles para el jugador.  
+Se consume al utilizar armas y puede recuperarse mediante recompensas.
+
+---
+
+### Health (Vida)
+Valor que representa la resistencia de una entidad.  
+Al llegar a cero, la entidad es eliminada.
+
+---
+
+### Damage (Daño)
+Cantidad de vida que se reduce al recibir un ataque o impacto de proyectil.
 
 ---
 
 ## Decisiones de diseño
 
-- Los proyectiles poseen daño base, mientras que los **efectos son opcionales**.
-- Los efectos se aplican al finalizar el ciclo de vida del proyectil.
-- Las recompensas se modelan de forma **genérica**, permitiendo representar distintos tipos de beneficios sin necesidad de múltiples subclases.
-- Los modificadores se mantienen simples, con posibilidad de extenderse a comportamientos en el futuro.
-- Se introduce la abstracción `Attack` para desacoplar la lógica de ataque de los zombies, permitiendo definir distintos comportamientos sin modificar la entidad principal.
-- El modelo está preparado para extender el sistema de efectos mediante nuevas clases que representen comportamientos adicionales.
-
----
+- Las armas **no aplican daño directamente**, sino que generan proyectiles.
+- El proyectil es el responsable de aplicar daño en el mundo.
+- Los efectos son **opcionales** y están asociados únicamente a proyectiles.
+- Las recompensas se modelan como objetos consumibles.
+- Los ataques de los zombies se desacoplan mediante `ZombieAttack`, permitiendo múltiples comportamientos sin modificar la clase `Zombie`.
+- Se separa claramente la configuración del disparo (`Weapon`) de la ejecución en el mundo (`Projectile`).
+- El modelo prioriza simplicidad y extensibilidad, evitando abstracciones innecesarias en la primera versión.

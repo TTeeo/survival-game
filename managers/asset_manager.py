@@ -34,3 +34,10 @@ class AssetManager:
     sprite = sheet.subsurface((x, y, size, size)).copy()
 
     self.sprites[name] = sprite
+
+  def scale_sprite(self, name, scale):
+    """Escala un sprite ya cargado. Usado para tank (1.6x) y runner (0.75x)."""
+    sprite = self.sprites[name]
+    w, h = sprite.get_size()
+    new_size = (int(w * scale), int(h * scale))
+    self.sprites[name] = pygame.transform.scale(sprite, new_size)

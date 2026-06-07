@@ -220,7 +220,7 @@ ZOMBIES = {
 # =========================
 ROUND_DELAY = 5000  # ms entre rondas
 
-# Rondas predefinidas — introdución gradual de tipos nuevos.
+# Rondas predefinidas — introducción gradual de tipos nuevos.
 ROUND_CONFIG = {
   1: {
     "total_zombies": 3,
@@ -292,8 +292,8 @@ def get_round_config(n):
 SPAWN_OFFSET = 50
 
 SPAWN_POINTS = [
-  (-SPAWN_OFFSET,              SCREEN_HEIGHT // 2),
+  (-SPAWN_OFFSET,               SCREEN_HEIGHT // 2),
   (SCREEN_WIDTH + SPAWN_OFFSET, SCREEN_HEIGHT // 2),
-  (SCREEN_WIDTH // 2,          -SPAWN_OFFSET),
-  (SCREEN_WIDTH // 2,          SCREEN_HEIGHT + SPAWN_OFFSET),
+  (SCREEN_WIDTH // 2,           -SPAWN_OFFSET),
+  (SCREEN_WIDTH // 2,           SCREEN_HEIGHT + SPAWN_OFFSET),
 ]

@@ -16,5 +16,6 @@ class ZombieFactory:
       speed=data["stats"]["speed"],
       health=data["stats"]["health"],
       damage=data["stats"]["damage"],
-      image=image
+      image=image,
+      score_value=data["stats"]["score_value"],
     )

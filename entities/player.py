@@ -1,4 +1,5 @@
 import pygame
+import threading
 
 from settings import SCREEN_WIDTH, SCREEN_HEIGHT, DIR_DOWN, DIR_UP, DIR_LEFT, DIR_RIGHT
 from factories.weapon_factory import WeaponFactory
@@ -20,6 +21,7 @@ class Player:
     self.weapon = WeaponFactory.create(config["init"]["weapon"], assets)
 
     self.rect = pygame.Rect(self.x, self.y, self.size, self.size)
+    self._health_lock = threading.Lock()
 
   def handle_input(self):
     keys = pygame.key.get_pressed()
@@ -78,10 +80,14 @@ class Player:
       (dir_x, dir_y)
     )
   def take_damage(self, amount):
-    self.health -= amount
-
-    if self.health <= 0:
-      self.die()
+    """
+    Protegido con Lock: garantiza que la modificación de health sea atómica
+    si varios zombies atacan desde hilos concurrentes.
+    """
+    with self._health_lock:
+      self.health -= amount
+      if self.health <= 0:
+        self.die()
 
   def die(self):
     print("Player died")

@@ -1,35 +1,52 @@
 import pygame
 import random
 
-from settings import ZOMBIE_SEPARATION_DISTANCE, ZOMBIE_SEPARATION_FORCE, ZOMBIE_SPRITE_SIZE
+from settings import ZOMBIE_SEPARATION_DISTANCE, ZOMBIE_SEPARATION_FORCE
 
 
 class Zombie:
-	def __init__(self, x, y, speed, health, damage, image):
+	def __init__(self, x, y, speed, health, damage, image, score_value=0):
 		self.x = x
 		self.y = y
 		self.speed = speed
 		self.health = health
 		self.damage = damage
 		self.image = image
-	
-		self.size = ZOMBIE_SPRITE_SIZE  
+		self.score_value = score_value
 
+		# El tamaño se deriva de la imagen para soportar zombies escalados (tank, runner).
+		self.size = image.get_width()
 
 		self.rect = self.image.get_rect(topleft=(self.x, self.y))
 		self.attack_cooldown = 1000
 		self.last_attack_time = 0
 
-	def update(self, player, zombies):
-		self.move(player, zombies)
+	def compute_movement(self, player, zombies):
+		"""
+		Calcula el vector de movimiento sin modificar estado.
+		Solo lectura: seguro para ejecutarse en paralelo con ThreadPoolExecutor.
+		"""
+		return self.get_movement(player, zombies)
+
+	def apply_movement(self, move_x, move_y):
+		"""
+		Aplica el vector calculado. Siempre ejecutado en el hilo principal
+		para evitar escrituras concurrentes sobre x, y y rect.
+		"""
+		self.x += move_x * self.speed
+		self.y += move_y * self.speed
 		self.sync_rect()
+
+	def update(self, player, zombies):
+		move_x, move_y = self.compute_movement(player, zombies)
+		self.apply_movement(move_x, move_y)
 		self.try_attack(player)
 
 	def attack(self, player):
 		now = pygame.time.get_ticks()
 
 		if now - self.last_attack_time >= self.attack_cooldown:
-			player.health -= self.damage
+			player.take_damage(self.damage)
 			self.last_attack_time = now
 
 	def take_damage(self, amount):

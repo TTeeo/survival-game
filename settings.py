@@ -287,6 +287,41 @@ def get_round_config(n):
 
 
 # =========================
+# BOSS
+# =========================
+BOSS_ROUND_INTERVAL = 5   # aparece en rondas 5, 10, 15…
+
+BOSS_CONFIG = {
+  "speed":       1.2,
+  "health":      500,
+  "damage":      30,
+  "score_value": 200,
+}
+
+
+# =========================
+# MODIFIERS / DROPS
+# =========================
+MODIFIER_DROP_CHANCE = 0.25   # 25 % por zombie eliminado
+
+
+# =========================
+# OBSTACLES
+# =========================
+# Cada entrada: (x, y, ancho, alto)
+OBSTACLES = [
+  (130, 120, 90, 90),
+  (680, 120, 90, 90),
+  (130, 390, 90, 90),
+  (680, 390, 90, 90),
+  (375, 240, 150, 120),  # obstáculo central
+]
+
+ZOMBIE_OBSTACLE_AVOID_DISTANCE = 55
+ZOMBIE_OBSTACLE_AVOID_FORCE    = 2.2
+
+
+# =========================
 # SPAWN
 # =========================
 SPAWN_OFFSET = 50

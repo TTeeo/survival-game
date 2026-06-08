@@ -1,7 +1,10 @@
 import pygame
 import random
 
-from settings import ZOMBIE_SEPARATION_DISTANCE, ZOMBIE_SEPARATION_FORCE
+from settings import (
+	ZOMBIE_SEPARATION_DISTANCE, ZOMBIE_SEPARATION_FORCE,
+	ZOMBIE_OBSTACLE_AVOID_DISTANCE, ZOMBIE_OBSTACLE_AVOID_FORCE,
+)
 
 
 class Zombie:
@@ -21,12 +24,12 @@ class Zombie:
 		self.attack_cooldown = 1000
 		self.last_attack_time = 0
 
-	def compute_movement(self, player, zombies):
+	def compute_movement(self, player, zombies, obstacles=None):
 		"""
 		Calcula el vector de movimiento sin modificar estado.
 		Solo lectura: seguro para ejecutarse en paralelo con ThreadPoolExecutor.
 		"""
-		return self.get_movement(player, zombies)
+		return self.get_movement(player, zombies, obstacles)
 
 	def apply_movement(self, move_x, move_y):
 		"""
@@ -68,18 +71,38 @@ class Zombie:
 		self.x += move_x * self.speed
 		self.y += move_y * self.speed
 
-	def get_movement(self, player, zombies):
+	def get_movement(self, player, zombies, obstacles=None):
 		move_x, move_y = self.get_direction_to_player(player)
-		sep_x, sep_y = self.get_separation_between_zombies(zombies)
-
+		sep_x, sep_y   = self.get_separation_between_zombies(zombies)
 		move_x += sep_x
 		move_y += sep_y
+
+		if obstacles:
+			avoid_x, avoid_y = self.get_obstacle_avoidance(obstacles)
+			move_x += avoid_x
+			move_y += avoid_y
 
 		chaos_x, chaos_y = self.get_chaos()
 		move_x += chaos_x
 		move_y += chaos_y
 
 		return self.normalize(move_x, move_y)
+
+	def get_obstacle_avoidance(self, obstacles):
+		"""Fuerza de repulsión frente a obstáculos — ejecutado en paralelo (solo lectura)."""
+		avoid_x = avoid_y = 0.0
+		cx = self.x + self.size / 2
+		cy = self.y + self.size / 2
+		for obs in obstacles:
+			closest_x = max(obs.rect.left, min(cx, obs.rect.right))
+			closest_y = max(obs.rect.top,  min(cy, obs.rect.bottom))
+			dx = cx - closest_x
+			dy = cy - closest_y
+			dist = (dx**2 + dy**2) ** 0.5
+			if 0 < dist < ZOMBIE_OBSTACLE_AVOID_DISTANCE:
+				avoid_x += (dx / dist) * ZOMBIE_OBSTACLE_AVOID_FORCE
+				avoid_y += (dy / dist) * ZOMBIE_OBSTACLE_AVOID_FORCE
+		return avoid_x, avoid_y
 
 	def get_direction_to_player(self, player):
 		dx = player.x - self.x

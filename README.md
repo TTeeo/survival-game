@@ -9,19 +9,18 @@ El objetivo es sobrevivir la mayor cantidad de rondas posibles eliminando enemig
 
 ## **📋 Requisitos**
 
-Python 3.10 o superior
+Python 3.9 o superior
 
-> Este proyecto utiliza pygame (instalado automáticamente desde `requirements.txt`)
+> Este proyecto utiliza pygame 2.6.1 (instalado automáticamente desde `requirements.txt`)
 
-## **⚙️Instalación**
+## **⚙️ Instalación**
 
 ### 1. Clonar repositorio
 ```
-
 git clone https://github.com/TTeeo/zombie-survival.git
-cd zombie-game
-
+cd zombie-survival
 ```
+
 ### 2. Crear entorno virtual
 ```
 python -m venv venv
@@ -29,15 +28,15 @@ python -m venv venv
 
 ### 3. Activar entorno virtual
 
-En Linux:
-```
-source venv/bin/activate
-```
 En Windows:
 ```
 venv\Scripts\activate
 ```
 
+En Linux / macOS:
+```
+source venv/bin/activate
+```
 
 ### 4. Instalar dependencias
 ```
@@ -45,6 +44,13 @@ pip install -r requirements.txt
 ```
 
 ## **▶️ Ejecución**
+
+En Windows:
+```
+python main.py
+```
+
+En Linux / macOS:
 ```
 python3 main.py
 ```
@@ -178,7 +184,7 @@ El proyecto está organizado separando responsabilidades principales:
 
 ## **⚙️ Configuración**
 
-La configuración principal del juego se encuentra en `config/settings.py`.
+La configuración principal del juego se encuentra en `settings.py` (raíz del proyecto).
 
 Este archivo centraliza los valores clave del sistema, organizados en:
 

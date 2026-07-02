@@ -23,6 +23,7 @@ class Zombie:
 		self.rect = self.image.get_rect(topleft=(self.x, self.y))
 		self.attack_cooldown = 1000
 		self.last_attack_time = 0
+		self.hit_flash_until = 0
 
 	def compute_movement(self, player, zombies, obstacles=None):
 		"""
@@ -54,12 +55,18 @@ class Zombie:
 
 	def take_damage(self, amount):
 		self.health -= amount
+		self.hit_flash_until = pygame.time.get_ticks() + 120
 
 		if self.health <= 0:
 			self.die()
 
 	def draw(self, screen):
-		screen.blit(self.image, (self.x, self.y))
+		if pygame.time.get_ticks() < self.hit_flash_until:
+			flash = self.image.copy()
+			flash.fill((255, 255, 255, 0), special_flags=pygame.BLEND_RGBA_ADD)
+			screen.blit(flash, (self.x, self.y))
+		else:
+			screen.blit(self.image, (self.x, self.y))
 
 	def die(self):
 		self.is_alive = False

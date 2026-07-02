@@ -3,7 +3,7 @@ import threading
 import time
 
 from entities.zombie import Zombie
-from settings import ZOMBIE_SPRITE_SIZE, BOSS_CONFIG
+from settings import ZOMBIE_SPRITE_SIZE, BOSS_CONFIG, ZOMBIE_BASIC
 
 
 class BossThread(threading.Thread):
@@ -98,7 +98,7 @@ class BossZombie(Zombie):
 
     def __init__(self, x, y, assets, player):
         # Sprite base escalado 2× con tinte rojizo
-        base  = assets.get_sprite("zombie_basic")
+        base  = assets.get_sprite(ZOMBIE_BASIC)
         size  = ZOMBIE_SPRITE_SIZE * 2
         image = pygame.transform.scale(base, (size, size))
         tinted = image.copy()

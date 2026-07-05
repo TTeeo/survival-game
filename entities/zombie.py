@@ -41,11 +41,6 @@ class Zombie:
 		self.y += move_y * self.speed
 		self.sync_rect()
 
-	def update(self, player, zombies):
-		move_x, move_y = self.compute_movement(player, zombies)
-		self.apply_movement(move_x, move_y)
-		self.try_attack(player)
-
 	def attack(self, player):
 		now = pygame.time.get_ticks()
 
@@ -69,14 +64,7 @@ class Zombie:
 			screen.blit(self.image, (self.x, self.y))
 
 	def die(self):
-		self.is_alive = False
 		self.health = 0
-
-	def move(self, player, zombies):
-		move_x, move_y = self.get_movement(player, zombies)
-
-		self.x += move_x * self.speed
-		self.y += move_y * self.speed
 
 	def get_movement(self, player, zombies, obstacles=None):
 		move_x, move_y = self.get_direction_to_player(player)

@@ -183,6 +183,7 @@ class Game:
         now = pygame.time.get_ticks()
         if now - self.round_completed_time >= ROUND_DELAY:
             self.modifiers = []           # limpiar drops entre rondas
+            self.bullets   = []           # limpiar balas en vuelo de la ronda anterior
             self.current_round_number += 1
             self.current_round = self._create_round()
             self.state = GameState.PLAYING

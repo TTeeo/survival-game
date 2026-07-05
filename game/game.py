@@ -33,7 +33,9 @@ class Game:
     def __init__(self):
         pygame.init()
 
-        self.screen = pygame.display.set_mode(SCREEN_SIZE)
+        # SCALED mantiene la resolución lógica de 900x600 y la escala al monitor,
+        # así ninguna coordenada del juego cambia al pasar a pantalla completa.
+        self.screen = pygame.display.set_mode(SCREEN_SIZE, pygame.SCALED)
         pygame.display.set_caption("Zombie Survival")
 
         self.font        = pygame.font.Font(None, 36)
@@ -129,6 +131,8 @@ class Game:
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_r and self.state == GameState.GAME_OVER:
                     self.restart()
+                elif event.key == pygame.K_f:
+                    pygame.display.toggle_fullscreen()
 
     # ------------------------------------------------------------------
     # Update

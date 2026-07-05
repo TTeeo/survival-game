@@ -3,7 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from settings import (
     get_round_config,
-    SCREEN_WIDTH,
+    SCREEN_WIDTH, SCREEN_HEIGHT,
     OBSTACLES as _OBSTACLES_CFG,
     BOSS_ROUND_INTERVAL,
 )
@@ -61,10 +61,9 @@ class Round:
     # ------------------------------------------------------------------
 
     def _spawn_boss(self, player, assets):
-        # Centrado arriba: el centro de la pantalla cae dentro del obstáculo central.
         boss = BossZombie(
-            x=SCREEN_WIDTH // 2 - 32,
-            y=60,
+            x=SCREEN_WIDTH  // 2 - 32,
+            y=SCREEN_HEIGHT // 2 - 32,
             assets=assets,
             player=player,
         )

@@ -13,6 +13,13 @@ Python 3.9 o superior
 
 > Este proyecto utiliza pygame 2.6.1 (instalado automáticamente desde `requirements.txt`)
 
+## **💻 Restricciones y compatibilidad**
+
+- **Hardware:** sin restricciones — corre en cualquier equipo de escritorio moderno.
+- **Sistema operativo:** multiplataforma. Funciona en Windows, Linux y macOS (desarrollado y probado con Python 3.12 en macOS y Windows).
+- **Navegador:** no aplica — es una aplicación de escritorio, no requiere navegador ni conexión a internet.
+- **Pantalla:** resolución lógica de 900×600 escalable a pantalla completa (tecla `F`).
+
 ## **⚙️ Instalación**
 
 ### 1. Clonar repositorio
@@ -73,6 +80,7 @@ Cada zombie eliminado otorga puntos. El juego no tiene fin: las rondas escalan i
 | `S` | Mover hacia abajo |
 | `D` | Mover hacia la derecha |
 | `ESPACIO` | Disparar en la dirección que mira el jugador |
+| `F` | Alternar pantalla completa |
 | `R` | Reiniciar partida *(solo en pantalla de Game Over)* |
 
 > El jugador siempre dispara en la última dirección en que se movió.
@@ -168,6 +176,33 @@ Cuando la vida del jugador llega a 0 aparece la pantalla de Game Over mostrando:
 - Instrucción para reiniciar con `R`.
 
 
+## **🧵 Concurrencia**
+
+La concurrencia es el eje del proyecto: durante toda la partida conviven el hilo principal (bucle del juego a 60 FPS), un hilo productor de apariciones, un pool de hilos para la IA y, en rondas de jefe, un hilo dedicado a su máquina de estados.
+
+| Mecanismo | Primitivas | Archivo |
+|-----------|------------|---------|
+| Generación de enemigos (productor-consumidor) | `threading.Thread`, `queue.Queue`, `threading.Event` | `spawners/zombie_spawner.py` |
+| IA de zombies en paralelo (fork-join) | `concurrent.futures.ThreadPoolExecutor` | `managers/round.py` |
+| Máquina de estados del jefe | `threading.Thread`, `threading.Lock` | `entities/boss.py` |
+| Protección de la vida del jugador | `threading.Lock` | `entities/player.py` |
+
+### Hilo generador de enemigos (Producer-Consumer)
+Cada ronda lanza un `SpawnerThread` que produce pedidos de aparición a intervalos regulares, independientes del frame rate, y los deposita en una `queue.Queue` (estructura sincronizada, sin necesidad de locks explícitos). El hilo principal consume la cola una vez por frame con `get_nowait()` y construye ahí los zombies, porque las operaciones gráficas de pygame no son seguras fuera del hilo principal: el productor decide *cuándo y qué* aparece; el consumidor lo *materializa*. La espera entre apariciones se hace con `Event.wait(timeout)`, que además permite cancelar la ronda al instante.
+
+### IA en paralelo (fork-join)
+El movimiento de cada zombie se calcula sumando cuatro fuerzas (atracción al jugador, separación entre zombies, evasión de obstáculos y ruido aleatorio). Ese cómputo se reparte en un `ThreadPoolExecutor` en dos fases: una **fase paralela de solo lectura** donde cada worker calcula el vector de movimiento sin modificar estado, una **barrera** donde el hilo principal espera todos los resultados, y una **fase secuencial** donde aplica los movimientos y ataques. Al no haber escrituras durante la fase de lectura, no hay condiciones de carrera.
+
+### Hilo del jefe (exclusión mutua)
+El jefe tiene un hilo propio que corre su máquina de estados a 20 Hz (persecución → advertencia → embestida). Ese hilo **escribe** el par (dirección, multiplicador de velocidad) y los workers del pool lo **leen**; ambos accesos están protegidos por un `threading.Lock` que garantiza la consistencia del par como unidad atómica.
+
+### Vida del jugador
+`take_damage()` ejecuta bajo `Lock` la secuencia *check-then-act* del escudo (verificar si hay escudo activo, consumirlo o descontar vida), garantizando su atomicidad ante ataques concurrentes.
+
+### Ciclo de vida de los hilos
+Todos los hilos son *daemon* y cada ronda expone un `stop()` idempotente que detiene el productor, el pool y el hilo del jefe. Se invoca al completar la ronda, al morir el jugador, al reiniciar y al cerrar el juego.
+
+
 ## **🧩 Estructura del proyecto**
 
 El proyecto está organizado separando responsabilidades principales:
@@ -175,10 +210,10 @@ El proyecto está organizado separando responsabilidades principales:
 - `main.py`: punto de entrada del programa.
 - `game/`: contiene la lógica principal del juego y sus estados.
 - `entities/`: contiene las entidades del juego, como jugador, zombies, armas, balas y modificadores.
-- `managers/`: contiene clases encargadas de coordinar partes del sistema, como rondas, colisiones, assets y puntaje.
+- `managers/`: contiene clases encargadas de coordinar partes del sistema, como las rondas y los assets.
 - `factories/`: contiene la creación de objetos como armas y zombies.
 - `spawners/`: contiene la lógica de aparición de enemigos.
-- `config/`: contiene la configuración general del juego.
+- `settings.py`: configuración general del juego (pantalla, armas, zombies, rondas, jefe, obstáculos).
 - `assets/`: contiene los recursos visuales del juego.
 
 

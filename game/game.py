@@ -129,7 +129,9 @@ class Game:
             if event.type == pygame.QUIT:
                 self.running = False
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_r and self.state == GameState.GAME_OVER:
+                if event.key == pygame.K_ESCAPE:
+                    self.running = False
+                elif event.key == pygame.K_r and self.state == GameState.GAME_OVER:
                     self.restart()
                 elif event.key == pygame.K_f:
                     pygame.display.toggle_fullscreen()
@@ -368,3 +370,8 @@ class Game:
             "Presioná  R  para reiniciar", True, (130, 220, 130)
         )
         self.screen.blit(restart_surf, restart_surf.get_rect(center=(cx, cy + 105)))
+
+        exit_surf = self.font.render(
+            "Presioná  Esc  para salir", True, (220, 220, 220)
+        )
+        self.screen.blit(exit_surf, exit_surf.get_rect(center=(cx, cy + 145)))

@@ -72,7 +72,7 @@ class Player:
   def apply_modifier(self, mod_type):
     now = pygame.time.get_ticks()
     if mod_type == MODIFIER_HEAL:
-      self.health = min(self.health + 25, self.max_health)
+      self.health = min(self.health + 50, self.max_health)
     elif mod_type == MODIFIER_SPEED:
       self.active_modifiers[MODIFIER_SPEED]  = now + 8_000
     elif mod_type == MODIFIER_SHIELD:
@@ -94,11 +94,7 @@ class Player:
           del self.active_modifiers[MODIFIER_SHIELD]
           return  # daño absorbido por el escudo
       self.health -= amount
-      if self.health <= 0:
-        self.die()
 
-  def die(self):
-    pass  # game.py detecta health <= 0 y cambia el estado
 
   # ------------------------------------------------------------------
   # Draw

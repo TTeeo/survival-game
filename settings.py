@@ -76,7 +76,7 @@ WEAPONS = {
     "bullet_type": BULLET_RIFLE,
   },
   WEAPON_PISTOL: {
-    "damage": 10, "cooldown": 800, "bullet_speed": 10,
+    "damage": 40, "cooldown": 500, "bullet_speed": 10,
     "projectiles": 1, "spread": 0.0, "range": 600,
     "sprite": {"row": 0, "col": 1},
     "bullet_type": BULLET_PISTOL,
@@ -175,7 +175,7 @@ ZOMBIES = {
     "stats": {
       "speed": 2,
       "health": 30,
-      "damage": 8,
+      "damage": 5,
       "score_value": 15,
     },
     "scale": 1.0,
